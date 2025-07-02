@@ -17,13 +17,11 @@ export default class DijkstraVisualizer extends Component {
   }
 
   componentDidMount() {
-    // Set initial grid when component mounts
     const grid = getInitialGrid();
     this.setState({grid});
   }
 
   handleMouseDown(row, col) {
-    // Create a new grid that includes the walls just created
     const newGrid = getNewGridWithWalls(this.state.grid, row, col);
     this.setState({grid: newGrid, mouseIsPressed: true});
   }
@@ -32,7 +30,6 @@ export default class DijkstraVisualizer extends Component {
     this.setState({mouseIsPressed: false});
   }
 
-  // Handles when mouse enters a div or element
   handleMouseEnter(row, col) {
     if (!this.state.mouseIsPressed) return;
     // Create a new grid that includes the walls just created
@@ -42,18 +39,23 @@ export default class DijkstraVisualizer extends Component {
 
   animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-      // Once we get to the last node we have visited, show shortest path.
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
           this.animateShortestPath(nodesInShortestPathOrder);
         }, 10 * i);
         return;
       }
-      // Update the css for each of the nodes we have visited to show animation of searching.
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          'node node-visited';
+        const nodeElement = document.getElementById(`node-${node.row}-${node.col}`);
+        
+        if (node.isStart) {
+          nodeElement.className = 'node node-start node-visited';
+        } else if (node.isFinish) {
+          nodeElement.className = 'node node-finish node-visited';
+        } else {
+          nodeElement.className = 'node node-visited';
+        }
       }, 10 * i);
     }
   }
@@ -62,8 +64,15 @@ export default class DijkstraVisualizer extends Component {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
         const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          'node node-shortest-path';
+        const nodeElement = document.getElementById(`node-${node.row}-${node.col}`);
+        
+        if (node.isStart) {
+          nodeElement.className = 'node node-start node-shortest-path';
+        } else if (node.isFinish) {
+          nodeElement.className = 'node node-finish node-shortest-path';
+        } else {
+          nodeElement.className = 'node node-shortest-path';
+        }
       }, 50 * i);
     }
   }
@@ -72,11 +81,8 @@ export default class DijkstraVisualizer extends Component {
     const {grid} = this.state;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    // Get all nodes that we have visited, in order visited.
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    // Calculate the shortest path backtracking from the finish node.
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    // Finally, show the animaitions for searching and shortest path.
     this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
@@ -104,42 +110,87 @@ export default class DijkstraVisualizer extends Component {
 
     return (
       <>
-        <h5>Click on a square and drag to place walls between the starting node <span style={{color: "green"}}>(green)</span> and the end node <span style={{color: "red"}}>(red).</span> </h5>
-        <h5>Once all the walls are placed, click the button below to find the shortest path between start and finish using Dijkstra's Algorithm.</h5>
-        <hr></hr>
-        <div onClick={() => this.visualizeDijkstra()}><a className="visualize-button">Visualize Dijkstra's Algorithm</a></div>
-        <div onClick={() => this.resetBoard()}><a className="reset-button">Reset</a></div>
-        <div className="grid">
-          {grid.map((row, rowIdx) => {
-            return (
-              <div key={rowIdx}>
-                {row.map((node, nodeIdx) => {
-                  const {row, col, isFinish, isStart, isWall} = node;
-                  return (
-                    <Node
-                      key={nodeIdx}
-                      col={col}
-                      row={row}
-                      isFinish={isFinish}
-                      isStart={isStart}
-                      isWall={isWall}
-                      mouseIsPressed={mouseIsPressed}
-                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                      onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
-                      onMouseUp={() => this.handleMouseUp()}>
-                    </Node>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="app-header">
+          <h1 className="app-title">Dijkstra's Algorithm Visualizer</h1>
+          <p className="app-subtitle">
+            Add obstacles by dragging across the grid between  
+            <span style={{color: "green", fontWeight: "bold"}}> start </span> 
+            and 
+            <span style={{color: "red", fontWeight: "bold"}}> finish </span> 
+            nodes,then let the algorithm compute the most efficient route!
+          </p>
+        </div>
+
+        <div className="controls-container">
+          <button 
+            className="visualize-button" 
+            onClick={() => this.visualizeDijkstra()}
+          >
+            Visualize Dijkstra's Algorithm
+          </button>
+          <button 
+            className="reset-button" 
+            onClick={() => this.resetBoard()}
+          >
+            Reset Grid
+          </button>
+        </div>
+
+        <div className="grid-container">
+          <div className="grid">
+            {grid.map((row, rowIdx) => {
+              return (
+                <div key={rowIdx}>
+                  {row.map((node, nodeIdx) => {
+                    const {row, col, isFinish, isStart, isWall} = node;
+                    return (
+                      <Node
+                        key={nodeIdx}
+                        col={col}
+                        row={row}
+                        isFinish={isFinish}
+                        isStart={isStart}
+                        isWall={isWall}
+                        mouseIsPressed={mouseIsPressed}
+                        onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                        onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
+                        onMouseUp={() => this.handleMouseUp()}>
+                      </Node>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="legend-container">
+          <div className="legend-item">
+            <div className="legend-node" style={{backgroundColor: 'green'}}></div>
+            <span className="legend-text">Start Node</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-node" style={{backgroundColor: 'red'}}></div>
+            <span className="legend-text">Finish Node</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-node" style={{backgroundColor: '#1f2937'}}></div>
+            <span className="legend-text">Wall</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-node" style={{backgroundColor: '#06b6d4'}}></div>
+            <span className="legend-text">Visited</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-node" style={{backgroundColor: '#fbbf24'}}></div>
+            <span className="legend-text">Shortest Path</span>
+          </div>
         </div>
       </>
     );
   }
 }
 
-// Create a 50 row and 20 column grid with custom nodes.
 const getInitialGrid = () => {
   const grid = [];
   for (let row = 0; row < 20; row++) {
@@ -152,9 +203,6 @@ const getInitialGrid = () => {
   return grid;
 };
 
-// Create layout for each node object in the grid.
-// Distance always starts at Infinity, all nodes arent visited, and arent walls.
-// PreviousNode will be the node we were on before we reached current node.
 const createNode = (col, row) => {
   return {
     col,
@@ -168,18 +216,13 @@ const createNode = (col, row) => {
   };
 };
 
-// Update the grid to include the wall that we just added.
 const getNewGridWithWalls = (grid, row, col) => {
-  // Create a copy of the current grid.
   const newGrid = grid.slice();
-  // Isolate the current node clicked on
   const node = newGrid[row][col];
-  // Copy all existing attributes, then make node a wall/take wall away.
   const newNode = {
     ...node,
     isWall: !node.isWall,
   };
-  // Update the node in newGrid to be the new node we just created.
   newGrid[row][col] = newNode;
   return newGrid;
 };
