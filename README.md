@@ -1,25 +1,34 @@
-This project was created as a visual aid to help students understand how pathfinding algorithms work.
+# Pathfinding Visualizer
 
-**Deployed App: https://cogilvy.github.io/Dijkstra-Visualizer/**
+This is a simple web application built to help visualize how Dijkstra's pathfinding algorithm works. It allows users to interactively place walls and see the algorithm find the shortest path between a start and end node.
 
-## Dijkstra's Algorithm
+Deployed Link: [https://pathfinding-visualizer-karan.vercel.app](https://pathfinding-visualizer-karan.vercel.app)
 
-Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956 and published three years later.
+---
 
-The algorithm exists in many variants. Dijkstra's original algorithm found the shortest path between two given nodes, but a more common variant fixes a single node as the "source" node and finds shortest paths from the source to all other nodes in the graph, producing a shortest-path tree.
+## About Dijkstra's Algorithm
 
-For a given source node in the graph, the algorithm finds the shortest path between that node and every other. It can also be used for finding the shortest paths from a single node to a single destination node by stopping the algorithm once the shortest path to the destination node has been determined. For example, if the nodes of the graph represent cities and edge path costs represent driving distances between pairs of cities connected by a direct road (for simplicity, ignore red lights, stop signs, toll roads and other obstructions), Dijkstra's algorithm can be used to find the shortest route between one city and all other cities. A widely used application of shortest path algorithm is network routing protocols, most notably IS-IS (Intermediate System to Intermediate System) and Open Shortest Path First (OSPF). It is also employed as a subroutine in other algorithms such as Johnson's.
+Dijkstra's algorithm is used to find the shortest path between two points in a graph. It works by exploring all possible paths and always choosing the shortest available option at each step. This visualizer shows the step-by-step process of how the algorithm works on a grid.
 
-The Dijkstra algorithm uses labels that are positive integers or real numbers, which are totally ordered. It can be generalized to use any labels that are partially ordered, provided the subsequent labels (a subsequent label is produced when traversing an edge) are monotonically non-decreasing. This generalization is called the generic Dijkstra shortest-path algorithm.
+---
 
+## Features
 
-### Installing and Running the App
+- Visualizes Dijkstra’s pathfinding algorithm step by step
+- Interactive grid where users can:
+  - Set start and end points
+  - Place walls to act as obstacles
+  - Reset the grid and run the algorithm again
+- Clean and responsive layout
 
-A step by step series of examples that tell you how to get a development env running.
+---
 
-```
-$ git clone
-$ cd Dijkstra-Visualizer
-$ npm install
-$ npm start
-```
+## How to Run Locally
+
+To run the app on your local machine:
+
+```bash
+git clone https://github.com/KaranSaini2219/pathfinding-visualizer-karan.git
+cd pathfinding-visualizer-karan
+npm install
+npm start
